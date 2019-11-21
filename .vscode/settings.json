@@ -1,0 +1,5 @@
+{
+    "prettier.tabWidth": 4,
+    "prettier.proseWrap": "never",
+    "prettier.useTabs": true
+}
