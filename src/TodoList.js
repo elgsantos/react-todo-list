@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { TodoListItem } from "./TodoListItem";
 export class TodoList extends Component {
 	state = {
+		searchFor: "",
 		listTitle: "",
 		taskItems: [
 			{
@@ -22,6 +23,13 @@ export class TodoList extends Component {
 		]
 	}
 
+	componentDidUpdate(prevProps) {
+		if (prevProps.searchFor.toLowerCase() !== this.props.searchFor.toLowerCase()) {
+			this.setState({
+				searchFor: this.props.searchFor
+			});
+		}
+	}
 
 	addTask(name) {
 		let task = {
@@ -30,7 +38,6 @@ export class TodoList extends Component {
 			status: "pending"
 		}
 		this.setState({ taskItems: [...this.state.taskItems, task] });
-		console.log(this.state.taskItems)
 	}
 	render() {
 		const handleToggleCompleted = (taskId, event) => {
@@ -43,17 +50,36 @@ export class TodoList extends Component {
 				})
 			})
 		}
-		return (
-			<div>
-				<h1>{this.state.listTitle}</h1>
-				<ul>
-					{this.state.taskItems.map(task => (
-						<li key={task.id} id={`item-${task.id}`}>
-							<TodoListItem onToggleCompleted={handleToggleCompleted} {...task} />
-						</li>
-					))}
-				</ul>
-			</div>
-		);
+		if (this.state.searchFor !== "") {
+			return (
+				<div>
+					<h1>{this.state.listTitle}</h1>
+					<ul>
+						{this.state.taskItems
+							.filter((task) => task.name.toLowerCase().search(this.props.searchFor) >= 0)
+							.map(task => (
+								<li key={task.id} id={`item-${task.id}`}>
+									<TodoListItem onToggleCompleted={handleToggleCompleted} {...task} />
+								</li>
+							))}
+					</ul>
+				</div>
+			);
+		} else {
+			return (
+				<div>
+					<h1>{this.state.listTitle}</h1>
+					<ul>
+						{
+							this.state.taskItems
+								.map(task => (
+									<li key={task.id} id={`item-${task.id}`}>
+										<TodoListItem onToggleCompleted={handleToggleCompleted} {...task} />
+									</li>
+								))}
+					</ul>
+				</div>
+			);
+		}
 	}
 }
